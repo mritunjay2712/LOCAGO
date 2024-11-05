@@ -1,0 +1,550 @@
+/* Import custom fonts */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+header {
+    /* background: linear-gradient(to bottom, rgba(128, 128, 128, 0.8) 0%, rgba(128, 128, 128, 0) 100%); */
+    color: black;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+.heading {
+    display: flex;
+}
+
+.heading p {
+    font-size: 25px;
+    align-self: flex-end;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 3em;
+    font-weight: bold;
+    /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
+}
+
+header h1 span {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.2em;
+    color: #383c40;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-right: 10px;
+}
+
+.headerBtns{
+    background-color: #31373e;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 21px;
+    transition: background-color 0.3s ease;
+}
+
+.headerBtns:hover {
+    background-color: #0056b3;
+}
+
+.hidden {
+    display: none;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    overflow: hidden; /* Ensure no unintended overflow */
+}
+
+#map {
+    flex: 2;
+    height: 530px; /* Ensure a fixed or appropriate height */
+    /* max-width: 700px; */
+    z-index: 0; /* Ensure map is on top */
+    border-radius: 30px;
+}
+
+#vehicleSection {
+    flex: 1;
+    margin-left: 20px;
+    max-width: 400px;
+}
+
+section {
+    padding: 20px;
+    background-color: #abaaaa5c;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    min-height: 460px;
+    width: 100%;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.vehicle-list {
+    list-style: none;
+    padding: 0;
+    max-height: 300px;
+    overflow: auto;
+}
+
+.vehicle-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.vehicle-id, .vehicle-type, .vehicle-area {
+    flex: 1;
+}
+
+/* Modal styles */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.4); 
+    padding-top: 60px; 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 600px; /* Set a max-width for better styling */
+    border-radius: 8px; /* Add rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a box shadow */
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content input[type="text"] {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #31373e;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#searchSection {
+    margin-bottom: 20px;
+}
+
+#searchSection input {
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    width: calc(50% - 12px); /* Adjust width as needed */
+    box-sizing: border-box;
+}
+
+/* Existing styles - no changes made */
+.vehicle-list {
+    list-style: none;
+    padding: 0;
+    max-height: 300px;
+    overflow: auto;
+}
+
+.vehicle-list li {
+    display: flex;
+    flex-direction: column; /* Ensure buttons stack vertically */
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.vehicle-id, .vehicle-type, .vehicle-area, .vehicle-api-url {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline;
+    padding-right: 10px;
+
+}
+
+/* Adjusted styles for the buttons */
+.vehicle-list button {
+    background: none;
+    border: none;
+    font-size: inherit;
+    font-family: inherit;
+    color: #0056b3; /* Adjust button text color */
+    cursor: pointer;
+    padding: 10px; /* Add padding to make buttons clickable */
+    margin-top: 5px; /* Adjust spacing between buttons */
+    text-align: left; /* Align text to the left */
+    display: block; /* Ensure buttons span full width */
+    width: 100%; /* Ensure buttons span full width */
+    display: flex;
+    
+}
+
+.vehicle-list button:hover {
+    color: #007bff; /* Adjust hover color if needed */
+}
+
+/* Arrange buttons in three columns */
+.vehicle-list .buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.vehicle-list .buttons-container button {
+    flex-basis: 30%; /* Adjust width for three columns */
+    max-width: 30%;
+}
+.vehicle-btn{
+    display: flex;
+    justify-content: space-between;
+}
+
+
+#deleteVehicleInput{
+    /* display: flex; */
+    margin-top: 5px;
+    text-align: center;
+    height: 30px;
+}
+
+#deleteVehicleInput input{
+    height: 30px;
+    border-radius: 5px;
+}
+
+#deleteVehicleInput button{
+    height: 32px;
+    outline: none;
+    border-radius: 5px;
+}
+
+
+#overlay-heading-subhead{
+    font-weight: 200;
+    font-style: italic;
+    font-family: monospace;
+    margin-left: 33px;
+    margin-top: 0;
+}
+
+#overlay-image{
+    /* display:flex; */
+    height: 100px;
+    width: 100px;
+}
+
+.overlay-button :hover{
+    background-color: black;
+}
+
+.overlay-button-image{
+    height: 90px;
+
+}
+/* 
+#guidlines-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+#guidlines{
+    text-align: left;
+    display: flex;
+    width: 38%;
+    font-weight: 700;
+    color: #383c40;
+} */
+
+/* Overlay styles */
+#overlay {
+            
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+#overlay-content {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.85); /* Make the content background less transparent */
+}
+
+
+#overlay-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/static/bg.jpeg') no-repeat center center; /* Change the path to your image */
+    background-size: cover; /* Ensure the image covers the entire overlay */
+    opacity: 0.7; /* Increase the opacity of the background image */
+    z-index: -1; /* Ensure the image is behind the content */
+}
+
+
+.overlay-button {
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    padding: 5px;
+    margin: 10px;
+    /* padding: 10px 20px; */
+    font-size: 28px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 100px;
+    background-color: #ffffff;
+    border: solid rgba(0, 0, 0, 0.74) 1px;
+    
+}
+
+.overlay-button:hover{
+    border:solid white 1px;
+    background-color: rgba(0, 0, 0, 0.443);
+    color: white;
+}
+.overlay-button:active{
+    border:none;
+}
+
+.overlay-heading h1 {
+    margin: 0;
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.overlay-heading span {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.2em;
+    color: #383c40;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-right: 10px;
+}
+
+.overlay-heading{
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#admin-login-form {
+    display: none; /* Initially hidden */
+    margin-top: 20px;
+}
+
+#admin-login-form.active {
+    display: block; /* Display when active */
+}
+
+#admin-login-form input {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(40% - 22px);
+}
+
+#admin-login-form button {
+    background-color: #fff;
+    align-self: center;
+    margin: 10px;
+    padding: 7px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border: solid black 1px;
+}
+#admin-login-form button:hover{
+    border:solid white 1px;
+    background-color: rgba(0, 0, 0, 0.443);
+    color: white;
+}
+#admin-login-form button:active{
+    border:none;
+}
+
+
+#error-message {
+    color: red;
+    display: none;
+}
+
+#phone-number-form {
+    margin-top: 20px;
+}
+
+#phone-number-form input {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(40% - 22px);
+}
+
+#phone-number-form button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#phone-error-message {
+    color: red;
+    display: none;
+}
+
+
+
+
+
+/* Ensure overlay-content has position: relative for absolute positioning within it */
+#overlay-content {
+    position: relative;
+}
+
+/* Style for the top-right button container */
+.top-right-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000; /* Ensure it stays above other content */
+}
+
+/* Style the button within the container */
+.top-right-button .overlay-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.top-right-button .overlay-button img {
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+}
+
+
+/* Style for the instructions */
+#instructions {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Align list properly and ensure numbers are close to the text */
+
+#instructions-list {
+    margin-left: 20px; /* Space from the left edge of the container */
+    padding-left: 0; /* Remove default padding */
+    list-style-position: inside; /* Ensures list numbers are inside the container */
+    line-height: 1.5; /* Improve line spacing for readability */
+    text-align: left;
+    text-indent: 22%;
+}
+
+#instructions-list li {
+    margin-bottom: 10px; /* Space between items */
+    padding-left: 20px; /* Space between the number and text */
+}
+
+#instructions-list li::marker {
+    font-size: 1em; /* Adjust number size if needed */
+    color: #333; /* Optional: Adjust number color */
+}

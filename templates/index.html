@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>LOCAGO</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="overlay">
+        <div id="overlay-content">
+            <div class="top-right-button">
+                <button class="overlay-button" onclick="toggleAdminLoginForm()">
+                    <img class="overlay-button-image" src="/static/adminImage.png" alt="">
+                </button>
+            </div>
+            <h1 class="overlay-heading"><img id="overlay-image" src="/static/ukimage.png" alt=""><span>LOCAGO</span></h1>
+            <h3 id="overlay-heading-subhead">by Government of Uttarakhand</h3>
+            <div id="phone-number-form">
+                <h2>Enter Phone Number</h2>
+                <input type="text" id="phone-number" placeholder="Phone Number" required>
+                <div id="phone-error-message">Please enter a valid phone number</div>
+            </div>
+            <h2>Emergency Services</h2>
+            <button class="overlay-button" onclick="emergencyService('Police')"><img class="overlay-button-image" src="/static/policeCar.png" alt=""></button>
+            <button class="overlay-button" onclick="emergencyService('Ambulance')"><img class="overlay-button-image" src="/static/ambulance.png" alt=""></button>
+            <button class="overlay-button" onclick="emergencyService('Fire Brigade')"><img class="overlay-button-image" src="/static/firebrigade.png" alt=""></button>
+            <div id="admin-login-form">
+                <h2>Admin Login</h2>
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button onclick="adminLogin()">LOGIN</button>
+                <div id="error-message">Invalid username or password</div>
+            </div>
+            <div id="guidlines-container">
+                <p id="instructions">To request emergency assistance, follow these steps:</p>
+                <ol id="instructions-list">
+                    <li>Enter your phone number in the "Phone Number" field.</li>
+                    <li>Select the type of emergency service you need (Police, Ambulance, or Fire Brigade) by clicking on the corresponding button.</li>
+                    <li>Make sure your browser's location services are enabled so we can accurately determine your location.</li>
+                    <li>Once you have submitted your request, wait for a confirmation that includes the assigned vehicle and its distance from your location.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <h1 class="heading"><span>LOCAGO</span></h1>
+        <div class="actionbuttons">
+            <button class="headerBtns" id="addVehicleBtn">Add New Vehicle</button>
+            <button class="headerBtns" id="deleteVehicleBtn">Delete Vehicle</button>
+            <div id="deleteVehicleInput" class="hidden">
+                <input type="text" id="vehicleIdToDelete" placeholder="Enter Vehicle ID">
+                <button id="confirmDeleteBtn">Confirm Delete</button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div id="map"></div>
+        <section id="vehicleSection">
+            <h2>All Vehicles</h2>
+            <div id="searchSection">
+                <input type="text" id="searchVehicleId" placeholder="Search by Vehicle ID">
+                <input type="text" id="searchVehicleType" placeholder="Search by Vehicle Type">
+            </div>
+            <ul class="vehicle-list" id="allVehiclesList">
+                {% for vehicle in vehicles %}
+                    <li data-vehicle-id="{{ vehicle.vehicle_id }}">
+                        <button class="vehicle-btn">
+                            <div class="vehicle-id">{{ vehicle.vehicle_id }}</div>
+                            <div class="vehicle-type">{{ vehicle.type }}</div>
+                            <div class="vehicle-area">{{ vehicle.assigned_area }}</div>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h2>Vehicles Outside Tehri District</h2>
+            <ul class="vehicle-list" id="outsideVehiclesList">
+                {% for vehicle in outside_vehicles %}
+                    <li data-vehicle-id="{{ vehicle.vehicle_id }}">
+                        <button class="vehicle-btn">
+                            <div class="vehicle-id">{{ vehicle.vehicle_id }}</div>
+                            <div class="vehicle-type">{{ vehicle.type }}</div>
+                            <div class="vehicle-area">{{ vehicle.assigned_area }}</div>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <div id="addVehicleModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>New Vehicle Details</h2>
+                <form action="/add_vehicle" method="post">
+                    <input type="text" name="type" placeholder="Vehicle Type" required>
+                    <input type="text" name="api_url" placeholder="API URL" required>
+                    <input type="text" name="phone_number" placeholder="Contact No" required>
+                    <input type="hidden" name="assigned_area" value="Tehri District">
+                    <button type="submit">Add Vehicle</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='map.js') }}"></script>
+    <script src="{{ url_for('static', filename='search.js') }}"></script>
+    <script>
+        let userPhoneNumber = '';
+
+        function toggleAdminLoginForm() {
+            const adminLoginForm = document.getElementById("admin-login-form");
+            adminLoginForm.classList.toggle("active");
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const deleteVehicleBtn = document.getElementById("deleteVehicleBtn");
+            const deleteVehicleInput = document.getElementById("deleteVehicleInput");
+
+            deleteVehicleBtn.addEventListener("click", function() {
+                deleteVehicleInput.classList.toggle("hidden");
+            });
+
+            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+            confirmDeleteBtn.addEventListener("click", function() {
+                const vehicleId = document.getElementById("vehicleIdToDelete").value.trim();
+
+                if (vehicleId !== "") {
+                    fetch(`/delete_vehicle/${vehicleId}`, {
+                        method: 'DELETE',
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert(`Vehicle ${vehicleId} deleted successfully!`);
+                            window.location.reload(); // Refresh the page after deletion
+                        } else {
+                            alert(`Failed to delete Vehicle ${vehicleId}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting vehicle:', error);
+                        alert(`Error deleting Vehicle ${vehicleId}`);
+                    });
+                } else {
+                    alert("Please enter a valid Vehicle ID to delete.");
+                }
+            });
+        });
+        
+        function emergencyService(service) {
+            const phoneNumberInput = document.getElementById("phone-number").value.trim();
+            const phoneErrorMessage = document.getElementById("phone-error-message");
+
+            // Validate phone number
+            if (/^\d{10}$/.test(phoneNumberInput)) {
+                phoneErrorMessage.style.display = "none";
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const userLatitude = position.coords.latitude;
+                        const userLongitude = position.coords.longitude;
+
+                        fetch(`/emergency_service/${service.toLowerCase()}?user_latitude=${userLatitude}&user_longitude=${userLongitude}&phone_number=${phoneNumberInput}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok.');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.vehicle_id && data.distance_from_user !== null) {
+                                    const { vehicle_id, distance_from_user } = data;
+                                    alert(`Assigned Vehicle: ${vehicle_id} - Distance from you: ${distance_from_user.toFixed(2)} km`);
+                                } else {
+                                    alert('No vehicle assigned or could not calculate distance.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching emergency service vehicle data:', error);
+                                alert('Error fetching emergency service vehicle data');
+                            });
+                    }, function(error) {
+                        console.error('Error getting user location:', error);
+                        alert('Error getting your location. Please enable location services and try again.');
+                    });
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            } else {
+                phoneErrorMessage.style.display = "block";
+            }
+        }
+
+        function adminLogin() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username === "admin" && password === "password") {
+                document.getElementById("overlay").style.display = "none";
+            } else {
+                document.getElementById("error-message").style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
